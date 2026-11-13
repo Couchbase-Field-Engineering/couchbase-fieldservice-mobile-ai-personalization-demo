@@ -1,4 +1,5 @@
 <img src="docs/images/couchbase-logo.svg" alt="Couchbase" height="44">
+<img width="1400" height="950" alt="image" src="https://github.com/user-attachments/assets/5abaf547-847b-4c57-837e-4716eb7c7029" />
 
 # Telecom Field Service on Couchbase
 
