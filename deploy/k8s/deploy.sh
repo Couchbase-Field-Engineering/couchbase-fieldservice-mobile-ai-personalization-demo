@@ -168,11 +168,12 @@ kubectl get pods,svc -n $FS_NS 2>/dev/null || true
 
 HOST="${MOTHER#*@}"; [ "$MOTHER" = local ] && HOST=$(remote "hostname -I | awk '{print \$1}'")
 port() { python3 -c 'import re,sys; t=open(sys.argv[1]).read(); m=re.search(sys.argv[2]+r":\s*\n\s*service:.*?port:\s*(\d+)", t, re.S); print(m.group(1) if m else sys.argv[3])' "$VALUES" "$1" "$2"; }
-WEB_PORT=$(port web 8084); API_PORT=$(port backend 8203); SG_PORT=$(port syncGateway 4990)
+WEB_PORT=$(port web 5153); API_PORT=$(port backend 8203); SG_PORT=$(port syncGateway 4990)
 say "Done"
 cat <<MSG
   AOM dashboard:        https://$HOST:3111   (admin / your AOM admin password)
-  Field service app: http://$HOST:$WEB_PORT   (the story: http://$HOST:$WEB_PORT/story)
+  Field service app: https://$HOST:$WEB_PORT   (the story: https://$HOST:$WEB_PORT/story)
+                        (sign in: demo / Couchbase123! unless web.auth is overridden; self-signed certificate)
   Backend status:       http://$HOST:$API_PORT/api/status   (aom.registration should reach "registered")
   Couchbase Lite:       ws://$HOST:$SG_PORT/fieldservice
 

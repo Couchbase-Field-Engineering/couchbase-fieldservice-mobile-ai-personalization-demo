@@ -16,10 +16,23 @@ spec:
           image: {{ include "fieldservice.image" (dict "root" . "image" .Values.web.image) }}
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
           ports:
-            - { name: http, containerPort: 80 }
+            - { name: https, containerPort: 443 }
+          env:
+            - { name: DEMO_USERNAME, value: {{ .Values.web.auth.username | quote }} }
+            - { name: DEMO_PASSWORD, value: {{ .Values.web.auth.password | quote }} }
+            - { name: TLS_HOSTS, value: {{ join "," (compact (concat (list .Values.publicHost) .Values.web.tls.hosts)) | quote }} }
           readinessProbe:
-            httpGet: { path: /, port: http }
+            httpGet: { path: /healthz, port: https, scheme: HTTPS }
+          {{- with .Values.web.tls.secretName }}
+          volumeMounts:
+            - { name: tls, mountPath: /etc/nginx/tls, readOnly: true }
+          {{- end }}
           resources: {{- toYaml .Values.web.resources | nindent 12 }}
+      {{- with .Values.web.tls.secretName }}
+      volumes:
+        - name: tls
+          secret: { secretName: {{ . | quote }} }
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -33,4 +46,4 @@ spec:
   {{- end }}
   selector: {{- include "fieldservice.selector" "web" | nindent 4 }}
   ports:
-    - { name: http, port: {{ .Values.web.service.port }}, targetPort: http }
+    - { name: https, port: {{ .Values.web.service.port }}, targetPort: https }

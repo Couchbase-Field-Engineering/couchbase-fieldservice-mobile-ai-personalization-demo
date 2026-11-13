@@ -16,7 +16,7 @@ publicHost: "192.168.111.4"
 # Node IPs to publish the public Services on through kube-proxy. Needed when
 # the cluster has no LoadBalancer implementation (K3s with ServiceLB disabled,
 # or a Rancher-provisioned cluster): the Services then answer on these IPs at
-# their own ports (8084, 8203, 4990) instead of staying <pending>.
+# their own ports (5153, 8203, 4990) instead of staying <pending>.
 externalIPs: []
 
 couchbase:
@@ -114,7 +114,18 @@ web:
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
-    port: 8084
+    # HTTPS. The pod terminates TLS itself (web/demo-gate.sh, web/nginx.conf).
+    port: 5153
+  # The sign-in page in front of the app and the story page.
+  auth:
+    username: demo
+    password: "Couchbase123!"
+  tls:
+    # A kubernetes.io/tls Secret (tls.crt / tls.key) to serve. Blank = the pod
+    # generates a self-signed certificate on start.
+    secretName: ""
+    # Extra host names / IPs for the self-signed certificate (publicHost is always included).
+    hosts: []
   resources:
     requests: { cpu: 50m, memory: 32Mi }
     limits: { cpu: 250m, memory: 128Mi }

@@ -7,8 +7,9 @@ backend registers itself with AOM and publishes the Knowledge Base{{ end }}.
   kubectl -n {{ .Release.Namespace }} get pods -w
   kubectl -n {{ .Release.Namespace }} logs deploy/backend -f
 
-The story (start here): http://{{ .Values.publicHost }}:{{ .Values.web.service.port }}/story
-The app in a browser:   http://{{ .Values.publicHost }}:{{ .Values.web.service.port }}
+The story (start here): https://{{ .Values.publicHost }}:{{ .Values.web.service.port }}/story
+The app in a browser:   https://{{ .Values.publicHost }}:{{ .Values.web.service.port }}
+                        (sign in as {{ .Values.web.auth.username }} / {{ .Values.web.auth.password }}; self-signed certificate unless web.tls.secretName is set)
 Backend status:         http://{{ .Values.publicHost }}:{{ .Values.backend.service.port }}/api/status
 Couchbase Lite (phones): ws://{{ .Values.publicHost }}:{{ .Values.syncGateway.service.port }}/{{ .Values.syncGateway.database }}
 Couchbase Web Console:  kubectl -n {{ .Release.Namespace }} port-forward svc/couchbase 18091:8091

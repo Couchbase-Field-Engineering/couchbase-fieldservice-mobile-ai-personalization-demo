@@ -25,7 +25,7 @@ Built from the Staples field order capture demo (same architecture, new domain),
 
 ## How the demo opens
 
-`http://<host>:8084/story` is **Maintenance That Doesn't Wait for Signal**, a seven-chapter story for the room before the live app. Use ←/→ to move between chapters, **N** for talking points and ☾ for dark mode:
+`https://<host>:5153/story` is **Maintenance That Doesn't Wait for Signal**, a seven-chapter story for the room before the live app. Use ←/→ to move between chapters, **N** for talking points and ☾ for dark mode:
 
 1. **A day in the field.** Why technicians are offline so often: steel shelters, sites that are off-air, basement telecom rooms, mountaintop relays, cable vaults, rooftop plant rooms. It closes with Maya closing out a $1,897 corrective work order at Salem Harbor Tower that is $377.40 over the site's remaining budget.
 2. **What the app needs.** Eight requirements: four for the phone, four for the AI and the data platform.
@@ -120,15 +120,23 @@ python3 scripts/register_with_aom.py --admin-password '<AOM admin password>'
 docker compose up -d --build backend       # picks up AOM_* from .env, publishes the KB, scopes the RAG app
 ```
 
-Then open **http://localhost:8084/story** for the story, **http://localhost:8084** for the app in a browser, or **http://localhost:8203** for a page linking every service.
+Then open **https://localhost:5153/story** for the story, **https://localhost:5153** for the app in a browser, or **http://localhost:8203** for a page linking every service.
 
 | Port | Service |
 |---|---|
-| `8084` | **The app in a browser** (`web` service), shown inside a phone frame (add `?frame=0` for full width) |
+| `5153` | **The app in a browser** over HTTPS, behind the sign-in page (`web` service), shown inside a phone frame (add `?frame=0` for full width) |
 | `8203` | Backend API + MCP server (`/fs/mcp`); `/` lists every link |
 | `4990` | Sync Gateway public, which is what phones replicate with: `ws://<host>:4990/fieldservice` |
 | `127.0.0.1:4991` | Sync Gateway admin |
 | `127.0.0.1:18094` | Couchbase Web Console (Administrator / password123) |
+
+**Sign-in and HTTPS.** The browser UI (the app, the story page and everything else the `web` container serves) is on **`https://<host>:5153`** and opens on a sign-in page:
+
+| Username | Password |
+|---|---|
+| `demo` | `Couchbase123!` |
+
+Change them with `DEMO_USERNAME` / `DEMO_PASSWORD` in `.env` (Compose) or `web.auth.username` / `web.auth.password` (Helm). The container serves a self-signed certificate it generates on first start, so the browser warns once; add the address people use to `TLS_HOSTS` (Compose) so it is in the certificate, or serve a real one by mounting `tls.crt` / `tls.key` at `/etc/nginx/tls` (Helm: `web.tls.secretName`). Plain `http://` on the same port redirects to HTTPS, and `/signout` ends the session. The sign-in covers the browser UI only: the backend API and Sync Gateway ports are unchanged.
 
 Ports are one above the Staples demo's (8083 / 8202 / 4988 / 4989 / 18093), so both stacks can run side by side next to AOM and the cruise demos. Bucket and Sync Gateway database are `fieldservice`; container names start with `fs-`.
 
@@ -154,7 +162,7 @@ AOM_ADMIN_PASSWORD='<current AOM password>' ONLY=fieldservice ./deploy/k8s/deplo
 AOM_ADMIN_PASSWORD='<current AOM password>' TARGET=hal ONLY=fieldservice ./deploy/k8s/deploy.sh   # hal
 ```
 
-`deploy/k8s/values-mother.yaml` and `values-hal.yaml` publish it on **8084 / 8203 / 4990**. With `AOM_AUTO_REGISTER=true` the backend registers itself with AOM (MCP server, agent, approval tier, Knowledge Base and RAG application); progress is in `/api/status` under `aom.registration`. A daily CronJob (04:30 America/New_York) drops a new mock export and the backend picks it up within five minutes.
+`deploy/k8s/values-mother.yaml` and `values-hal.yaml` publish it on **5153 / 8203 / 4990**. With `AOM_AUTO_REGISTER=true` the backend registers itself with AOM (MCP server, agent, approval tier, Knowledge Base and RAG application); progress is in `/api/status` under `aom.registration`. A daily CronJob (04:30 America/New_York) drops a new mock export and the backend picks it up within five minutes.
 
 ---
 
