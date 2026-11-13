@@ -214,25 +214,25 @@
 <!-- 5 -->
 <section class="chapter" data-title="One data plane for the AI">
   <div class="kicker">Chapter 5 · One data plane for the AI</div>
-  <h2>Databricks produces. Couchbase serves. AOM governs.</h2>
+  <h2>Databricks produces. Couchbase serves. Couchbase Labs Agent Operations Manager governs.</h2>
   <div class="flow" style="grid-template-columns: repeat(4, 1fr)">
     <div class="node dbx"><b>Databricks · 4:30 am</b>One job: Network 360 joins, asset-health model, JSON export. Then the warehouse stops.<span class="cost ok">1 run / day</span></div>
     <div class="node cb"><b>Couchbase Server</b>Sites, work plans, parts catalog, depot stock. The assistant's Context Cache copy lives here too.<span class="cost ok">serves all day</span></div>
-    <div class="node aom"><b>Agent Operations Manager</b>Knowledge Base (runbook + site profiles), RAG app, Context Cache, LLM cache, tool governance, approvals.<span class="cost ok">cache first</span></div>
+    <div class="node aom"><b>Couchbase Labs Agent Operations Manager</b>Knowledge Base (runbook + site profiles), RAG app, Context Cache, LLM cache, tool governance, approvals.<span class="cost ok">cache first</span></div>
     <div class="node cb"><b>Couchbase Lite</b>One area per phone through Sync Gateway. Work orders written here, synced later.<span class="cost ok">offline</span></div>
   </div>
   <div class="grid g4" style="margin-top:22px" id="liveCards">
     <div class="card"><div class="sub">Warehouse queries avoided</div><div class="big live" id="m_wq">-</div><div class="sub">served from Couchbase / Couchbase Lite instead</div></div>
     <div class="card"><div class="sub">Est. Databricks spend avoided</div><div class="big live" id="m_usd">-</div><div class="sub">at <span id="m_rate">-</span> per warehouse / serving call (set DBX_COST_PER_QUERY_USD)</div></div>
-    <div class="card"><div class="sub">Context Cache hit rate</div><div class="big live" id="m_ctx">-</div><div class="sub">AOM Context Cache · <span id="m_turns">-</span> assistant turns</div></div>
+    <div class="card"><div class="sub">Context Cache hit rate</div><div class="big live" id="m_ctx">-</div><div class="sub">Couchbase Labs Agent Operations Manager Context Cache · <span id="m_turns">-</span> assistant turns</div></div>
     <div class="card"><div class="sub">LLM cache hit rate</div><div class="big live" id="m_llm">-</div><div class="sub">exact + semantic hits across technicians</div></div>
     <div class="card"><div class="sub">Work orders captured</div><div class="big live" id="m_orders">-</div><div class="sub"><span id="m_offline">-</span> queued offline first · <span id="m_value">-</span> of parts</div></div>
-    <div class="card"><div class="sub">Awaiting approval</div><div class="big live" id="m_appr">-</div><div class="sub">budget overrides &amp; outage windows held by AOM</div></div>
+    <div class="card"><div class="sub">Awaiting approval</div><div class="big live" id="m_appr">-</div><div class="sub">budget overrides &amp; outage windows held by Couchbase Labs Agent Operations Manager</div></div>
     <div class="card"><div class="sub">Export loaded</div><div class="big live" id="m_export">-</div><div class="sub"><span id="m_rows">-</span> sites · <span id="m_techs">-</span> technicians</div></div>
     <div class="card"><div class="sub">Model Serving calls avoided</div><div class="big live" id="m_ms">-</div><div class="sub">asset health read from the export, not scored live</div></div>
   </div>
   <p class="legend" id="liveNote" style="margin-top:10px">Live from <code>/api/status</code>. Use the app and watch these move.</p>
-  <div class="notes"><b>Talking points.</b> Two caches, two bills. AOM's <b>Context Cache</b> keeps the assembled site context (profile chunks + work plan + alarms + budget) keyed by export date and site revision, so the second question about a tower never re-reads the warehouse <i>or</i> Couchbase. AOM's <b>LLM cache</b> makes the second technician's identical runbook question free. Every number here is a Databricks query that didn't run.</div>
+  <div class="notes"><b>Talking points.</b> Two caches, two bills. Couchbase Labs Agent Operations Manager's <b>Context Cache</b> keeps the assembled site context (profile chunks + work plan + alarms + budget) keyed by export date and site revision, so the second question about a tower never re-reads the warehouse <i>or</i> Couchbase. Couchbase Labs Agent Operations Manager's <b>LLM cache</b> makes the second technician's identical runbook question free. Every number here is a Databricks query that didn't run.</div>
 </section>
 
 <!-- 6 -->
@@ -245,10 +245,10 @@
       <tr><td><b>SQL warehouse uptime</b></td><td>Warm from first site to last sync - 12-14 h/day, sized for peak</td><td class="cb">One scheduled job, ~20 min, then auto-stop</td></tr>
       <tr><td><b>Warehouse queries</b></td><td>~15 per visit × every visit (site, alarms, history, parts, lookups)</td><td class="cb">0 during the day; the export is read once into Couchbase</td></tr>
       <tr><td><b>Model Serving</b></td><td>Score asset health per request; endpoint kept hot</td><td class="cb">Scored once in the job; results travel with the export</td></tr>
-      <tr><td><b>Assistant context</b></td><td>Fresh warehouse reads for every question</td><td class="cb">AOM Context Cache + Couchbase copy, invalidated by export date / site rev</td></tr>
+      <tr><td><b>Assistant context</b></td><td>Fresh warehouse reads for every question</td><td class="cb">Couchbase Labs Agent Operations Manager Context Cache + Couchbase copy, invalidated by export date / site rev</td></tr>
       <tr><td><b>LLM tokens</b></td><td>Every technician's "how do I…?" is a new call</td><td class="cb">LLM cache: exact and semantic hits across technicians</td></tr>
       <tr><td><b>No signal</b></td><td>No site screen, no work order - a paper job sheet</td><td class="cb">Everything renders and work orders are captured from Couchbase Lite</td></tr>
-      <tr><td><b>Governance</b></td><td>Each team wires its own approvals and audit</td><td class="cb">AOM: RBAC, tool scope, approvals, traces, audit for every action</td></tr>
+      <tr><td><b>Governance</b></td><td>Each team wires its own approvals and audit</td><td class="cb">Couchbase Labs Agent Operations Manager: RBAC, tool scope, approvals, traces, audit for every action</td></tr>
       <tr><td><b>Freshness</b></td><td>Live - but a technician mostly needs this morning's scores</td><td class="cb">This morning's export + live work-order state carried forward in Couchbase</td></tr>
     </tbody>
   </table>
@@ -264,16 +264,16 @@
       <h3>Open</h3>
       <ul class="clean">
         <li><a href="/">The app</a> - sign in as a demo technician (employee ID + last name are on the sign-in screen)</li>
-        <li><a id="aomLink" href="#" target="_blank">AOM dashboard</a> - Agents, Servers, Knowledge, Context Cache, RAG Applications, Approvals, Traces</li>
+        <li><a id="aomLink" href="#" target="_blank">Couchbase Labs Agent Operations Manager dashboard</a> - Agents, Servers, Knowledge, Context Cache, RAG Applications, Approvals, Traces</li>
         <li><a href="/api/status" target="_blank">/api/status</a> - export load, KB publishing, Databricks offload counters</li>
       </ul>
     </div>
     <div class="card">
       <h3>Script</h3>
       <ol class="clean" style="padding-left:20px">
-        <li><b>Maya Chen (204817 / Chen).</b> Route → Salem Harbor Tower. Two alarms, a corrective work plan pre-built from the asset-health scores. Turn on <i>Profile → No signal</i>. Start the work order, tick the tasks, submit: <b>On device</b>. Ask the assistant "what needs doing at this site today?" → answered on device. Turn signal back on: tap <b>Submit as budget override</b> → <b>Awaiting approval</b>. Approve in AOM → <b>Parts on order</b> (one battery block short at the Northeast depot, ETA on the card); both alarms clear and the plan flips back to preventive.</li>
+        <li><b>Maya Chen (204817 / Chen).</b> Route → Salem Harbor Tower. Two alarms, a corrective work plan pre-built from the asset-health scores. Turn on <i>Profile → No signal</i>. Start the work order, tick the tasks, submit: <b>On device</b>. Ask the assistant "what needs doing at this site today?" → answered on device. Turn signal back on: tap <b>Submit as budget override</b> → <b>Awaiting approval</b>. Approve in Couchbase Labs Agent Operations Manager → <b>Parts on order</b> (one battery block short at the Northeast depot, ETA on the card); both alarms clear and the plan flips back to preventive.</li>
         <li><b>Salem Central Office.</b> Two rectifier modules: <b>Parts on order</b>, the depot is short. Ask "how does a budget override work?" twice - second time <i>LLM cache · exact hit</i>.</li>
-        <li><b>Devon Walker (318552 / Walker).</b> Mountaintop relay. Ask the same runbook question → cache hit from Maya's turn. Ask "do I need an outage window?" → request one; the NOC approves it in AOM.</li>
+        <li><b>Devon Walker (318552 / Walker).</b> Mountaintop relay. Ask the same runbook question → cache hit from Maya's turn. Ask "do I need an outage window?" → request one; the NOC approves it in Couchbase Labs Agent Operations Manager.</li>
         <li><b>Sofia Alvarez (427190 / Alvarez).</b> Lone Star Stadium District: 12 small cells on one Hub SLA. Fort Worth Stockyards Rooftop is on an access hold - the work order is refused and the assistant steers to logging "no access". Log a visit; the route stop flips to visited.</li>
       </ol>
     </div>
@@ -330,13 +330,13 @@
   };
   const AFTER = {
     title: 'One export a night. Everything else served from Couchbase.',
-    lead: 'Databricks still does the heavy lifting - the Network 360 join and the asset-health model - once, at 4:30 am. The export lands in Couchbase Server, Sync Gateway puts each area on its technician\'s phone, and the assistant answers from AOM\'s Context Cache and Couchbase. The warehouse auto-stops before the first truck leaves the depot.',
+    lead: 'Databricks still does the heavy lifting - the Network 360 join and the asset-health model - once, at 4:30 am. The export lands in Couchbase Server, Sync Gateway puts each area on its technician\'s phone, and the assistant answers from Couchbase Labs Agent Operations Manager\'s Context Cache and Couchbase. The warehouse auto-stops before the first truck leaves the depot.',
     flow: `
       <div class="node cb"><b>Field app + Couchbase Lite</b>Every screen from the on-device database. Work orders written locally.<span class="cost ok">0 queries</span></div>
       <div class="node cb"><b>Sync Gateway</b>One area per technician. Push work orders, pull results.<span class="cost ok">replication</span></div>
       <div class="node cb"><b>Couchbase Server</b>Sites, work plans, parts catalog, depot stock, work-order state - loaded once from the export.<span class="cost ok">serves all day</span></div>
       <div class="node dbx"><b>Databricks job · 4:30 am</b>Join + model + JSON export. Warehouse stops at 4:50.<span class="cost ok">1 run / day</span></div>
-      <div class="node aom"><b>AOM</b>Context Cache, LLM cache, KB retrieval, governed tools.<span class="cost ok">cache hits</span></div>`,
+      <div class="node aom"><b>Couchbase Labs Agent Operations Manager</b>Context Cache, LLM cache, KB retrieval, governed tools.<span class="cost ok">cache hits</span></div>`,
     legend: 'One scheduled job. 1,200 technicians × 8 sites × ~15 reads per visit are served from Couchbase and Couchbase Lite. Warehouse uptime: ~20 minutes.',
     changes: `
       <li>Warehouse runs ~20 minutes a day, then auto-stops</li>
@@ -383,8 +383,8 @@
     `<div class="status ok">Alarms, asset health, access notes and the work plan render from Couchbase Lite - instantly, no signal.</div>${alarms}${rows}`,
     `${rows}<div class="status wait">Budget check (on device): ${money(total)} is $377.40 over the site's remaining budget, and the depot has 3 of 4 battery blocks. Submit as a budget override.</div>`,
     `${rows}<div class="status ok">Checklist ticked, work order saved to Couchbase Lite · <b>On device</b>. Nothing left to do in the shelter.</div>`,
-    `${rows}<div class="status wait">At the gate: replicator pushed the work order through Sync Gateway → AOM holds it → <b>Awaiting approval</b>.</div>`,
-    `${rows}<div class="status ok">Field Ops approved in AOM. Worker closed <b>WO-261113-48811</b>: 2 alarms cleared, 1 battery block on order. Budget, history and plan updated on the phone.</div>`,
+    `${rows}<div class="status wait">At the gate: replicator pushed the work order through Sync Gateway → Couchbase Labs Agent Operations Manager holds it → <b>Awaiting approval</b>.</div>`,
+    `${rows}<div class="status ok">Field Ops approved in Couchbase Labs Agent Operations Manager. Worker closed <b>WO-261113-48811</b>: 2 alarms cleared, 1 battery block on order. Budget, history and plan updated on the phone.</div>`,
   ];
   const B = [
     `<div class="status muted">Open Salem Harbor Tower.</div>`,
@@ -422,7 +422,7 @@
       set('m_export', s.export_date || '-'); set('m_rows', (s.load && s.load.rows || 0).toLocaleString()); set('m_techs', s.load && s.load.techs || 0);
       set('m_ms', (m.model_serving_calls_avoided || 0).toLocaleString());
       if (s.aom && s.aom.dashboard_url) document.getElementById('aomLink').href = s.aom.dashboard_url;
-      document.getElementById('liveNote').textContent = `Live from /api/status · store: ${s.store} · AOM ${s.aom && s.aom.configured ? 'connected' : 'not configured (local fallbacks)'} · ${new Date().toLocaleTimeString()}`;
+      document.getElementById('liveNote').textContent = `Live from /api/status · store: ${s.store} · Couchbase Labs Agent Operations Manager ${s.aom && s.aom.configured ? 'connected' : 'not configured (local fallbacks)'} · ${new Date().toLocaleTimeString()}`;
     } catch (e) {
       document.getElementById('liveNote').textContent = 'Backend not reachable at /api/status yet.';
     }

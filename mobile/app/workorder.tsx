@@ -242,7 +242,7 @@ export default function WorkOrderScreen() {
               <Text style={styles.warn}>This site is on an access hold ({c.hold_days} days: {c.hold_reason}). Work orders will be refused until the Site Access desk releases it.</Text>
             ) : overBudget ? (
               <>
-                <Text style={styles.warn}>{money2(shortfall)} over the site's remaining maintenance budget. Submit as a budget override and Field Ops will approve it in the Agent Operations Manager.</Text>
+                <Text style={styles.warn}>{money2(shortfall)} over the site's remaining maintenance budget. Submit as a budget override and Field Ops will approve it in the Couchbase Labs Agent Operations Manager.</Text>
                 <TextInput value={overrideReason} onChangeText={setOverrideReason} placeholder="Reason for the override" placeholderTextColor={theme.color.faint} style={styles.field} />
                 <Button label={`Submit as budget override · ${money2(total)}`} icon="shield-checkmark" onPress={() => void submit(true)} disabled={!lines.length} />
                 <Button label="Try as a normal work order anyway" kind="ghost" onPress={() => void submit(false)} disabled={!lines.length} />
@@ -250,7 +250,7 @@ export default function WorkOrderScreen() {
             ) : (
               <Button label={`Close out work order · ${money2(total)}`} icon="checkmark-done" onPress={() => void submit(false)} disabled={!lines.length || c.on_hold} />
             )}
-            <Text style={styles.tiny}>Costed on this phone from the parts catalog in Couchbase Lite. The work order is saved locally and sent through Sync Gateway when you have a connection; Couchbase AOM runs it as a governed tool call.</Text>
+            <Text style={styles.tiny}>Costed on this phone from the parts catalog in Couchbase Lite. The work order is saved locally and sent through Sync Gateway when you have a connection; Couchbase Labs Agent Operations Manager runs it as a governed tool call.</Text>
           </Card>
         </>
       )}

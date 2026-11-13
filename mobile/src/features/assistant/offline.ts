@@ -4,7 +4,7 @@
  *  1. this technician's earlier answers (`assistant` doc `answers`, keyed by site + normalized question)
  *  2. the site's work plan (`work_plans` doc) and site document (alarms, assets, budget, access, history)
  *  3. the site's context cache (`context_cache` docs the server assembled
- *     from the AOM Knowledge Base + tool facts)
+ *     from the Couchbase Labs Agent Operations Manager Knowledge Base + tool facts)
  *  4. the runbook FAQ synced in the `catalog` doc
  *
  * Mirrors backend/app/assistant.py's intent keywords so the same question

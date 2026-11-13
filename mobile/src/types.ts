@@ -203,7 +203,7 @@ export type Tech = {
 
 export type RequestStatus = 'pending' | 'processing' | 'awaiting_approval' | 'completed' | 'parts_pending' | 'failed';
 
-/** An offline-first work order or field action: created on the phone, processed by the backend through AOM. */
+/** An offline-first work order or field action: created on the phone, processed by the backend through Couchbase Labs Agent Operations Manager. */
 export type WorkOrderRequest = {
   _id: string;
   type: 'request';

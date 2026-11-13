@@ -37,7 +37,7 @@ export default function WorkOrders() {
           </Text>
         ) : null}
         <Text style={styles.tiny}>
-          {q.governed ? 'Governed by Agent Operations Manager' : q._local ? 'Queued in Couchbase Lite' : q.status === 'pending' ? 'Synced - waiting for the backend' : 'Processed'}
+          {q.governed ? 'Governed by Couchbase Labs Agent Operations Manager' : q._local ? 'Queued in Couchbase Lite' : q.status === 'pending' ? 'Synced - waiting for the backend' : 'Processed'}
           {q.trace_id ? ` · trace ${q.trace_id.slice(0, 8)}` : ''}
           {q.cost_usd ? ` · ${money2(q.cost_usd)}` : ''}
         </Text>

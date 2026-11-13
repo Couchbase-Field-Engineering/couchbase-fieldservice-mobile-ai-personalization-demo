@@ -9,8 +9,8 @@ import { WorkOrderTracker } from '@/src/ui/WorkOrderTracker';
 
 const NEEDS_APPROVAL = new Set(['request_budget_override', 'request_outage_window']);
 const BLURB: Record<string, string> = {
-  request_budget_override: 'Field Ops reviews budget overrides in the Agent Operations Manager before the work order is closed. You\'ll see their decision here.',
-  request_outage_window: 'The NOC reviews outage windows in the Agent Operations Manager. Do not start service-affecting work until the grant shows here.',
+  request_budget_override: 'Field Ops reviews budget overrides in the Couchbase Labs Agent Operations Manager before the work order is closed. You\'ll see their decision here.',
+  request_outage_window: 'The NOC reviews outage windows in the Couchbase Labs Agent Operations Manager. Do not start service-affecting work until the grant shows here.',
   set_recurring_task: 'The part is added to the preventive visit nearest each due date, and drops off the model\'s recommendations.',
   create_rma: 'Creates an RMA, credits the cost back to the site budget and sets a depot return date five business days out.',
   log_site_visit: 'Marks the stop visited on your route and schedules the next visit.',

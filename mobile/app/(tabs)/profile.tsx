@@ -64,12 +64,12 @@ export default function Profile() {
         <Text style={styles.tiny}>Area channel: every site and work plan in {r?.area_name ?? 'your area'} syncs to this phone; your own channel carries the route, work orders and assistant history.</Text>
       </Card>
 
-      <SectionTitle title="Agent Operations Manager" />
+      <SectionTitle title="Couchbase Labs Agent Operations Manager" />
       <Card style={{ padding: 16, gap: 8 }}>
         <Text style={styles.meta}>
           Every work order, budget override, outage window, recurring task, RMA and visit log becomes a request that the Field Service Assistant agent runs
-          through Couchbase AOM: RBAC and tool scope, human approval for budget overrides and outage windows, a trace and an audit entry.
-          Assistant answers use AOM's Knowledge Base, Context Cache, memory and LLM cache.
+          through Couchbase Labs Agent Operations Manager: RBAC and tool scope, human approval for budget overrides and outage windows, a trace and an audit entry.
+          Assistant answers use Couchbase Labs Agent Operations Manager's Knowledge Base, Context Cache, memory and LLM cache.
         </Text>
         <Row icon="link-outline" label="Backend" value={API_URL} />
         <Row icon="finger-print-outline" label="Tech ID" value={session?.tech_id ?? '—'} />

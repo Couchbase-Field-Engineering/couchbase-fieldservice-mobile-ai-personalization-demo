@@ -9,7 +9,7 @@ import { openAction } from './nav';
 /**
  * Live status of one offline-first work order or field action, read from the
  * local database: "On device" -> pushed -> processed by the backend through
- * AOM -> synced back to this card.
+ * Couchbase Labs Agent Operations Manager -> synced back to this card.
  */
 export function WorkOrderTracker({ id, onRetry, retryLabel = 'Try again' }: { id: string; onRetry?: () => void; retryLabel?: string }) {
   const { snap, sync } = useData();
@@ -20,7 +20,7 @@ export function WorkOrderTracker({ id, onRetry, retryLabel = 'Try again' }: { id
   const steps = [
     { label: 'Saved in Couchbase Lite on this phone', done: true },
     { label: sync.status === 'paused' || sync.status === 'offline' ? 'Waiting for a connection…' : 'Synced to Couchbase through Sync Gateway', done: !q._local },
-    { label: q.governed === false ? 'Processed by the backend (AOM not configured - ungoverned)' : 'Run by the Field Service Assistant agent through Couchbase AOM', done: !waiting },
+    { label: q.governed === false ? 'Processed by the backend (Couchbase Labs Agent Operations Manager not configured - ungoverned)' : 'Run by the Field Service Assistant agent through Couchbase Labs Agent Operations Manager', done: !waiting },
     { label: q.status === 'awaiting_approval' ? (q.tool === 'request_outage_window' ? 'Waiting for NOC approval' : 'Waiting for Field Ops approval') : 'Result synced back to this phone', done: !waiting && q.status !== 'awaiting_approval' },
   ];
   const budgetLimit = q.status === 'failed' && q.reason_code === 'budget_limit';
@@ -50,7 +50,7 @@ export function WorkOrderTracker({ id, onRetry, retryLabel = 'Try again' }: { id
           ))}
         </View>
       ) : null}
-      {q.governed ? <Text style={styles.tiny}>Governed by Agent Operations Manager{q.trace_id ? ` · trace ${q.trace_id}` : ''}</Text> : null}
+      {q.governed ? <Text style={styles.tiny}>Governed by Couchbase Labs Agent Operations Manager{q.trace_id ? ` · trace ${q.trace_id}` : ''}</Text> : null}
       {budgetLimit ? (
         <Button
           label={`Submit as budget override${q.auth ? ` · ${money2(q.auth.shortfall_usd)} over` : ''}`}
