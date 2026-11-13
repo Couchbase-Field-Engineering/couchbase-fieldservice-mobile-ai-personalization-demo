@@ -1,0 +1,34 @@
+{
+  "bucket": "fieldservice",
+  "scopes": {
+    "field": {
+      "collections": {
+        "sites": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "techs": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "work_plans": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "assistant": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "context_cache": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "catalog": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Written only by the backend (Couchbase SDK writes, imported by SG).\n  // Phones pull these; any attempt to push one is rejected.\n  requireAdmin();\n  if (doc._deleted) { if (oldDoc && oldDoc.channels) { channel(oldDoc.channels); } return; }\n  channel(doc.channels);\n}"
+        },
+        "work_orders": {
+          "sync": "function (doc, oldDoc, meta) {\n  // Offline-first work orders and field actions. A tech's phone may CREATE one, as itself,\n  // as 'pending'. Only the backend (admin / import) may advance its status.\n  if (doc._deleted) { requireAdmin(); if (oldDoc) { channel(\"tech:\" + oldDoc.tech_id); } return; }\n  if (!doc.tech_id) { throw({forbidden: \"tech_id is required\"}); }\n  if (oldDoc == null || oldDoc._deleted) {\n    requireUser(doc.tech_id);\n    if (doc.type !== \"request\") { throw({forbidden: \"type must be 'request'\"}); }\n    if (doc.status !== \"pending\") { throw({forbidden: \"new work orders must be 'pending'\"}); }\n    if (doc._id.indexOf(\"wo::\" + doc.tech_id + \"::\") !== 0) { throw({forbidden: \"id must be wo::<tech_id>::<uuid>\"}); }\n  } else {\n    if (oldDoc.tech_id !== doc.tech_id) { throw({forbidden: \"tech_id is immutable\"}); }\n    requireAdmin();\n  }\n  channel(\"tech:\" + doc.tech_id);\n}"
+        }
+      }
+    }
+  },
+  "num_index_replicas": 0,
+  "enable_shared_bucket_access": true,
+  "import_docs": true,
+  "revs_limit": 50
+}

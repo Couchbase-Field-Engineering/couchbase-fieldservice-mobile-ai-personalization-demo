@@ -1,0 +1,52 @@
+{
+  "name": "site_asset_health_daily_export",
+  "description": "Daily export of network-site asset health (Network 360 + alarms + asset-health model scores) for the telecom field service app. Output is picked up by the demo backend, loaded into Couchbase (synced to Couchbase Lite on technicians' phones) and published to the Couchbase Agent Operations Manager Knowledge Base. The one scheduled run is the only Databricks compute the app uses.",
+  "schedule": {
+    "quartz_cron_expression": "0 30 4 * * ?",
+    "timezone_id": "America/New_York",
+    "pause_status": "UNPAUSED"
+  },
+  "max_concurrent_runs": 1,
+  "timeout_seconds": 5400,
+  "email_notifications": {
+    "on_failure": [
+      "network-data-platform@example.com"
+    ]
+  },
+  "tasks": [
+    {
+      "task_key": "export_site_asset_health",
+      "notebook_task": {
+        "notebook_path": "/Repos/telco/couchbase-fieldservice-mobile-ai-personalization-demo/databricks/notebooks/site_asset_health_daily_export",
+        "base_parameters": {
+          "catalog": "telco_prod",
+          "schema": "network360",
+          "export_volume": "/Volumes/telco_prod/network360/exports/site_asset_health_daily",
+          "history_work_orders": "12",
+          "num_files": "4"
+        },
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "export_cluster",
+      "max_retries": 2,
+      "min_retry_interval_millis": 300000
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "export_cluster",
+      "new_cluster": {
+        "spark_version": "16.4.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 4,
+        "data_security_mode": "SINGLE_USER",
+        "runtime_engine": "PHOTON"
+      }
+    }
+  ],
+  "tags": {
+    "team": "network-data-platform",
+    "consumer": "telco-field-service-app",
+    "demo": "couchbase-aom"
+  }
+}

@@ -1,0 +1,117 @@
+# Couchbase telecom field service demo
+#
+#   couchbase       Couchbase Server Enterprise 8.0.2 (developer/free license for dev & test)
+#   couchbase-init  one-shot: bucket `fieldservice`, scope `field`, collections, indexes
+#   sync-gateway    Sync Gateway 4.0 Enterprise (required by Couchbase Lite 4.x) - replicates to Couchbase Lite on the phone
+#   sg-init         one-shot: creates the `fieldservice` SG database (sync functions per collection)
+#   backend         FastAPI + the `telco-field-service` MCP server, the daily-export loader
+#                   and the offline-first work-order worker    (http://localhost:8203)
+#   web             the app in a browser                  (http://localhost:8084)
+#
+# The Couchbase Agent Operations Manager runs as its own compose stack on the same
+# machine; the backend reaches it at https://host.docker.internal:8090 and AOM reaches
+# the backend's MCP server at http://host.docker.internal:8203/fs/mcp.
+# Host ports are chosen to avoid AOM (8090, 8091-8096), the NOV demo (9091/9093, 4000, 8080)
+# and the cruise demos (8081/8082, 8200/8201, 4984-4986, 18091).
+
+services:
+  couchbase:
+    image: couchbase:enterprise-8.0.2
+    container_name: fs-couchbase
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18094:8091"   # Web Console: http://localhost:18094 (Administrator / password123)
+    volumes:
+      - couchbase-data:/opt/couchbase/var
+    healthcheck:
+      # No -f: this Couchbase version answers /pools with 401 as soon as it is up.
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://localhost:8091/pools"]
+      interval: 10s
+      timeout: 5s
+      start_period: 90s
+      retries: 40
+
+  couchbase-init:
+    image: couchbase:enterprise-8.0.2
+    container_name: fs-couchbase-init
+    depends_on:
+      couchbase:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/init/init.sh"]
+    environment:
+      CB_HOST: couchbase
+      CB_USERNAME: Administrator
+      CB_PASSWORD: password123
+    volumes:
+      - ./couchbase-init:/init:ro
+    restart: "no"
+
+  sync-gateway:
+    image: couchbase/sync-gateway:4.0.4-enterprise
+    container_name: fs-sync-gateway
+    restart: unless-stopped
+    depends_on:
+      couchbase-init:
+        condition: service_completed_successfully
+    command: ["/etc/sync_gateway/sg-bootstrap.json"]
+    volumes:
+      - ./sync-gateway/sg-bootstrap.json:/etc/sync_gateway/sg-bootstrap.json:ro
+    ports:
+      - "4990:4984"              # public REST / replication: ws://<your-mac-ip>:4990/fieldservice
+      - "127.0.0.1:4991:4985"    # admin API - localhost only
+
+  sg-init:
+    image: curlimages/curl:8.11.1
+    container_name: fs-sg-init
+    depends_on:
+      - sync-gateway
+    entrypoint: ["/bin/sh", "/sg/sg-init.sh"]
+    environment:
+      SG_ADMIN_URL: http://sync-gateway:4985
+    volumes:
+      - ./sync-gateway:/sg:ro
+    restart: "no"
+
+  backend:
+    build: ./backend
+    container_name: fs-backend
+    restart: unless-stopped
+    depends_on:
+      couchbase-init:
+        condition: service_completed_successfully
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      STORE_DRIVER: couchbase
+      COUCHBASE_CONN: couchbase://couchbase
+      COUCHBASE_USERNAME: Administrator
+      COUCHBASE_PASSWORD: password123
+      DUMP_DIR: /data/databricks-dump
+      SG_ADMIN_URL: http://sync-gateway:4985
+      SG_ADMIN_USERNAME: Administrator
+      SG_ADMIN_PASSWORD: password123
+      # Linked from the story page (http://localhost:8084/story).
+      AOM_DASHBOARD_URL: ${AOM_DASHBOARD_URL:-https://localhost}
+    volumes:
+      - ./data:/data:ro
+    ports:
+      - "8203:8200"              # app API + MCP server (/fs/mcp)
+
+  web:
+    # The app in a browser: http://localhost:8084 (sign in as a demo tech).
+    # Same screens and documents as the device build; uses the preview sync
+    # engine instead of Couchbase Lite. Rebuild after app changes:
+    #   cd mobile && npm run export:web:docker && docker compose up -d --build web
+    build: ./web
+    container_name: fs-web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8084:80"
+
+volumes:
+  couchbase-data:
